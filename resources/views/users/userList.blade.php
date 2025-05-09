@@ -1,18 +1,12 @@
 @extends('layout.app')
 
 @section('content')
-@php
-   $i = 1;
-@endphp
-
 <div class="container-fluid">
-    <!-- Create Button -->
     <div class="mb-3">
-        <a href="{{ route('user.create') }}" class="btn btn-success" class="">Create New User</a>
+        <a href="{{ route('user.create') }}" class="btn btn-success">Create New User</a>
     </div>
 
-    <!-- Table Section -->
-    <table id="userTable" class="table table-striped">
+    <table id="userTable" class="table table-bordered table-striped">
         <thead>
             <tr>
                 <th>#</th>
@@ -22,47 +16,57 @@
                 <th>Action</th>
             </tr>
         </thead>
-        <tbody>
-            @foreach ($users as $user)
-            <tr>
-                <th>{{ $i++ }}</th>
-                <td>{{ $user->name }}</td>
-                <td>{{ $user->email }}</td>
-                <td>
-                    <span class="badge badge-{{ $user->status == 1 ? 'success' : 'danger' }} alignment-text-center">
-                        {{ $user->status == 1 ? 'Active' : 'Inactive' }}
-                    </span>
-                </td>
-                <td>
-                    <div class="btn-group">
-                        <a href="#" class="btn btn-primary mr-2">Edit</a>
-                        <form action="#" method="POST">
-                            @csrf
-                            @method('delete')
-                            <button type="submit" class="btn btn-danger" onclick="return confirm('Confirm Delete?');">Delete</button>
-                        </form>
-                    </div>
-                </td>
-            </tr>
-            @endforeach
-        </tbody>
+        <tbody></tbody>
     </table>
-    </div>
 </div>
-
 @endsection
 
 @push('css')
-    <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap4.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.css"> 
+<link rel="stylesheet" href="https://cdn.datatables.net/2.3.0/css/dataTables.bootstrap4.css"> 
+
 @endpush
 
 @push('js')
-    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
-    <script>
-        $(document).ready(function () {
-            $('#userTable').DataTable();
+<script src="https://code.jquery.com/jquery-3.7.1.js"></script>    
+<script src=" https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/js/bootstrap.min.js"></script>    
+<script src="https://cdn.datatables.net/2.3.0/js/dataTables.js"></script>    
+<script src="https://cdn.datatables.net/2.3.0/js/dataTables.bootstrap4.js"></script>    
+
+<script>
+    $(document).ready(function () {
+        $('#userTable').DataTable({
+            processing: true,
+            ajax: '{{ route('user.data') }}',
+            columns: [
+                { data: 'id' },
+                { data: 'name' },
+                { data: 'email' },
+                {
+                    data: 'status',
+                    render: function (data, type, row) {
+                        let badge = data == 1 ? 'success' : 'danger';
+                        let label = data == 1 ? 'Active' : 'Inactive';
+                        return `<span class="badge badge-${badge}">${label}</span>`;
+                    }
+                },
+                {
+                    data: 'id',
+                    render: function (data, type, row) {
+                        return `
+                            <a href="/user/${data}/edit" class="btn btn-sm btn-primary">Edit</a>
+                            <form action="/user/${data}" method="POST" style="display:inline-block;">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" onclick="return confirm('Delete this user?')" class="btn btn-sm btn-danger">Delete</button>
+                            </form>`;
+                    },
+                    orderable: false,
+                    searchable: false
+                }
+            ]
         });
-    </script>
+    });
+</script>
 @endpush

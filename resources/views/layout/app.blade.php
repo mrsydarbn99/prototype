@@ -20,12 +20,6 @@
 
     <!-- Custom styles for this template-->
     <link href="{{ asset('assets/dist/css/sb-admin-2.min.css') }}" rel="stylesheet">
-    <!-- PyScript CSS -->
-    <link rel="stylesheet" href="https://pyscript.net/releases/2024.6.1/core.css">
-
-    @stack('css')
-    <!-- This script tag bootstraps PyScript -->
-    <script type="module" src="https://pyscript.net/releases/2024.6.1/core.js"></script>
 
 </head>
 

@@ -86,4 +86,11 @@ class UserController extends Controller
     {
         //
     }
+
+    public function getData()
+    {
+        $users = User::select('id', 'name', 'email', 'status')->get();
+
+        return response()->json(['data' => $users]);
+    }
 }

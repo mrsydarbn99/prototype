@@ -5,6 +5,10 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\CabinetController;
 use App\Http\Controllers\Auth\AuthController;
 
+Route::get('/', function () {
+    return view('index');
+})->name('home');
+
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 

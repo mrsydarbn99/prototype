@@ -1,7 +1,91 @@
-@extends('layout.app')
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Modern Dashboard Layout</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="{{ asset('assets/dist/css/app.css') }}">
+</head>
+<body>
 
-@section('content')
-    <div class="page-body">
+<button class="navbar-toggler" id="sidebarToggle">
+  <i class="fas fa-bars"></i>
+</button>
+
+<!-- Sidebar -->
+<aside class="navbar-vertical" id="sidebar">
+  <div class="navbar-brand">
+    <img src="/api/placeholder/110/32" alt="Logo" />
+  </div>
+  
+  <ul class="navbar-nav">
+    <li class="nav-item">
+      <a class="nav-link active" href="#">
+        <i class="fas fa-home"></i>
+        <span>Dashboard</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="#">
+        <i class="fas fa-chart-bar"></i>
+        <span>Analytics</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="#">
+        <i class="fas fa-users"></i>
+        <span>Customers</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="#">
+        <i class="fas fa-file-invoice"></i>
+        <span>Reports</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="#">
+        <i class="fas fa-cog"></i>
+        <span>Settings</span>
+      </a>
+    </li>
+  </ul>
+  
+  <div class="navbar-footer">
+    <span>© 2025 Your Company</span>
+  </div>
+</aside>
+
+<!-- Main Content -->
+<div class="page-wrapper">
+  <!-- Page Header -->
+    <header class="page-header">
+        <h1 class="page-title">Dashboard</h1>
+            <div class="dropdown" style="position: relative;">
+                <a href="#" class="nav-link" id="profileDropdown" onclick="toggleDropdown(event)">
+                <div class="avatar" style="background-image: url('/api/placeholder/38/38')"></div>
+                <div class="d-xl-block">
+                    <div style="font-weight: 500;">John Doe</div>
+                    <div style="font-size: 0.75rem; color: var(--text-muted);">Administrator</div>
+                </div>
+                </a>
+                <div class="dropdown-menu" id="userDropdown" style="display: none; position: absolute; top: 100%; left: 0; min-width: 200px;">
+                <a class="dropdown-item" href="#">
+                    <i class="fas fa-user"></i>
+                    <span>Profile</span>
+                </a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item text-danger" href="#">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+                </div>
+            </div>
+    </header>
+
+  <!-- Page Body -->
+  <div class="page-body">
     <!-- Stats Row -->
     <div class="row">
       <div class="col">
@@ -161,4 +245,30 @@
       </div>
     </div>
   </div>
-@endsection
+</div>
+
+<script>
+  // Toggle sidebar on mobile
+  document.getElementById('sidebarToggle').addEventListener('click', function() {
+    document.getElementById('sidebar').classList.toggle('open');
+  });
+
+   function toggleDropdown(event) {
+    event.preventDefault();
+    var dropdownMenu = document.getElementById('userDropdown');
+    dropdownMenu.style.display = (dropdownMenu.style.display === 'none' || dropdownMenu.style.display === '') ? 'block' : 'none';
+  }
+  
+  // Optional: Close dropdown if clicked outside
+  window.addEventListener('click', function(event) {
+    var dropdownMenu = document.getElementById('userDropdown');
+    var profileDropdown = document.getElementById('profileDropdown');
+    
+    if (!profileDropdown.contains(event.target) && !dropdownMenu.contains(event.target)) {
+      dropdownMenu.style.display = 'none';
+    }
+  });
+</script>
+
+</body>
+</html>

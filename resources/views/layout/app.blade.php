@@ -1,147 +1,81 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
-
-    <title>LPR System</title>
-
-    <!-- Custom fonts for this template-->
-    <link href="{{ asset('assets/dist/vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="text/css">
-    <link rel="stylesheet" href="{{ asset('assets/dist/css/bootstrap.min.css') }}" type="text/css">
-    <link
-        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
-        rel="stylesheet">
-
-    <!-- Custom styles for this template-->
-    <link href="{{ asset('assets/dist/css/sb-admin-2.min.css') }}" rel="stylesheet">
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cabinet Managment System</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
+  <link rel="stylesheet" href="{{ asset('assets/dist/css/app.css') }}">
+  @stack('css')
 </head>
+<body>
 
-<body id="page-top">
+<button class="navbar-toggler" id="sidebarToggle">
+  <i class="fas fa-bars"></i>
+</button>
 
-    <!-- Page Wrapper -->
-    <div id="wrapper">
+<!-- Sidebar -->
+@include('layout.sidebar')
 
-        @include('layout.sidebar')
-
-        <!-- Content Wrapper -->
-        <div id="content-wrapper" class="d-flex flex-column">
-
-            <!-- Main Content -->
-            <div id="content">
-
-                <!-- Topbar -->
-                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
-
-
-                    <!-- Topbar Navbar -->
-                    <ul class="navbar-nav ml-auto">
-
-                        <div class="topbar-divider d-none d-sm-block"></div>
-
-                        <!-- Nav Item - User Information -->
-                        <li class="nav-item dropdown no-arrow">
-                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">Admin</span>
-                                <img class="img-profile rounded-circle"
-                                    src="{{ asset('assets/dist/img/images.png') }}">
-                            </a>
-                            <!-- Dropdown - User Information -->
-                            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
-                                aria-labelledby="userDropdown">
-                                <a class="dropdown-item" href="#">
-                                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-                                    Profile
-                                </a>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
-                                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-                                    Logout
-                                </a>
-                            </div>
-                        </li>
-
-                    </ul>
-
-                </nav>
-                <!-- End of Topbar -->
-
-                <!-- Begin Page Content -->
-                <div class="container-fluid">
-
-                    <!-- Page Heading -->
-                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                        <h1 class="h3 mb-0 text-gray-800">{{ $title??'' }}</h1>
-                    </div>
-
-                    <!-- Content Row -->
-                    <div class="row">
-
-                       @yield('content')
-
-                    </div>
-
-                   
+<!-- Main Content -->
+<div class="page-wrapper">
+  <!-- Page Header -->
+    <header class="page-header">
+        <h1 class="page-title">Dashboard</h1>
+            <div class="dropdown" style="position: relative;">
+                <a href="#" class="nav-link" id="profileDropdown" onclick="toggleDropdown(event)">
+                <div class="avatar">
                 </div>
-                <!-- /.container-fluid -->
-
-            </div>
-            <!-- End of Main Content -->
-
-        </div>
-        <!-- End of Content Wrapper -->
-
-    </div>
-    <!-- End of Page Wrapper -->
-
-    <!-- Scroll to Top Button-->
-    <a class="scroll-to-top rounded" href="#page-top">
-        <i class="fas fa-angle-up"></i>
-    </a>
-
-    <!-- Logout Modal-->
-    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
-                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
-                    </button>
+                <div class="d-xl-block">
+                    <div style="font-weight: 500;">John Doe</div>
+                    <div style="font-size: 0.75rem; color: var(--text-muted);">Administrator</div>
                 </div>
-                <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                    <a class="btn btn-primary" href="login.html">Logout</a>
+                </a>
+                <div class="dropdown-menu" id="userDropdown" style="display: none; position: absolute; top: 100%; left: 0; min-width: 200px;">
+                <a class="dropdown-item" href="#">
+                    <i class="fas fa-user"></i>
+                    <span>Profile</span>
+                </a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item text-danger" href="#">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
                 </div>
             </div>
-        </div>
-    </div>
+    </header>
 
-    <!-- Bootstrap core JavaScript-->
-    <script src="{{ asset('assets/dist/vendor/jquery/jquery.min.js') }}"></script>
-    <script src="{{ asset('assets/dist/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+  <!-- Page Body -->
+  
+  <div class="container-fluid mt-3">
+    @yield('content')
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
+<script>
+  // Toggle sidebar on mobile
+  document.getElementById('sidebarToggle').addEventListener('click', function() {
+    document.getElementById('sidebar').classList.toggle('open');
+  });
 
-    <!-- Core plugin JavaScript-->
-    <script src="{{ asset('assets/dist/vendor/jquery-easing/jquery.easing.min.js') }}"></script>
-
-    <!-- Custom scripts for all pages-->
-    <script src="{{ asset('assets/dist/js/sb-admin-2.min.js') }}"></script>
-
-    <!-- Page level plugins -->
-    <script src="{{ asset('assets/dist/vendor/chart.js/Chart.min.js') }}"></script>
+   function toggleDropdown(event) {
+    event.preventDefault();
+    var dropdownMenu = document.getElementById('userDropdown');
+    dropdownMenu.style.display = (dropdownMenu.style.display === 'none' || dropdownMenu.style.display === '') ? 'block' : 'none';
+  }
+  
+  // Optional: Close dropdown if clicked outside
+  window.addEventListener('click', function(event) {
+    var dropdownMenu = document.getElementById('userDropdown');
+    var profileDropdown = document.getElementById('profileDropdown');
     
-    <script src="{{ asset('assets/dist/js/bootstrap.bundle.min.js') }}"></script>
-    
-    @stack('js')
+    if (!profileDropdown.contains(event.target) && !dropdownMenu.contains(event.target)) {
+      dropdownMenu.style.display = 'none';
+    }
+  });
+</script>
+@stack('js')
+
 </body>
-
 </html>

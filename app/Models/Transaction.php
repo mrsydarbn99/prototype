@@ -2,20 +2,14 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class CabinetTransaction extends Model
+class Transaction extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'cabinet_id',
-        'user_id',
-        'barcode',
-        'action', // 'check_in' or 'check_out'
-        'notes'
-    ];
+    protected $fillable = ['user_id','cabinet_id', 'barcode', 'action'];
 
     public function cabinet()
     {

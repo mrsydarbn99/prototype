@@ -1,86 +1,172 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <title>Interactive Login Page</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #74ebd5, #9face6);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
 
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
+    .login-container {
+      background: white;
+      padding: 2rem;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+      width: 350px;
+      animation: slideIn 0.5s ease-out;
+    }
 
-    <title>Login</title>
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
 
-    <!-- Custom fonts for this template-->
-    <link href="{{ asset('assets/dist/vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="text/css">
-    <link
-        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
-        rel="stylesheet">
+    h2 {
+      text-align: center;
+      margin-bottom: 1rem;
+      color: #333;
+    }
 
-    <!-- Custom styles for this template-->
-    <link href="{{ asset('assets/dist/css/sb-admin-2.min.css') }}" rel="stylesheet">
+    .form-group {
+      margin-bottom: 1rem;
+      position: relative;
+    }
 
+    label {
+      display: block;
+      margin-bottom: 0.3rem;
+      font-weight: 600;
+    }
+
+    input {
+      width: 85%;
+      padding: 0.6rem;
+      padding-right: 40px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      outline: none;
+    }
+
+    .toggle-password {
+      position: absolute;
+      right: 10px;
+      top: 34px;
+      cursor: pointer;
+      color: #888;
+    }
+
+    .error {
+      color: red;
+      font-size: 0.8rem;
+      margin-top: 0.2rem;
+    }
+
+    button {
+      width: 100%;
+      padding: 0.7rem;
+      background: #5c6bc0;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background: #3949ab;
+    }
+  </style>
 </head>
+<body>
 
-<body class="bg-gradient-primary">
+  <div class="login-container">
+    <h2>Login</h2>
+    <form id="loginForm" method="POST" action="{{ route('login') }}">
+      @csrf
 
-    <div class="container d-flex justify-content-center align-items-center min-vh-100">
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" value="{{ old('email') }}" />
+        <div class="error" id="emailError"></div>
+        @error('email')
+          <div class="error">{{ $message }}</div>
+        @enderror
+      </div>
 
-            <div class="col-xl-10 col-lg-12 col-md-9">
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" />
+        <span class="toggle-password" onclick="togglePassword()"><i class="fas fa-eye"></i></span>
+        <div class="error" id="passwordError"></div>
+        @error('password')
+          <div class="error">{{ $message }}</div>
+        @enderror
+      </div>
 
-                <div class="card o-hidden border-0 shadow-lg my-5">
-                    <div class="card-body p-0">
-                        <!-- Nested Row within Card Body -->
-                        <div class="row">
-                            <div class="col-lg-6 d-none d-lg-block bg-login-image"></div>
-                            <div class="col-lg-6">
-                                <div class="p-5">
-                                    <div class="text-center">
-                                        <h1 class="h4 text-gray-900 mb-4">Welcome Back!</h1>
-                                    </div>
-                                    <form class="user" action="{{ route('login') }}" method="POST">
-                                        @csrf
-                                        <div class="form-group">
-                                            <input type="email" class="form-control form-control-user"
-                                                id="email" aria-describedby="emailHelp" name="email"
-                                                placeholder="Enter Username...">
-                                        </div>
-                                        <div class="form-group">
-                                            <input type="password" class="form-control form-control-user"
-                                                id="password" placeholder="Password" name="password">
-                                        </div>
-                                        <div class="form-group">
-                                            <div class="custom-control custom-checkbox small">
-                                                <input type="checkbox" class="custom-control-input" id="customCheck">
-                                                <label class="custom-control-label" for="customCheck">Remember
-                                                    Me</label>
-                                            </div>
-                                        </div>
-                                        <button type="submit" class="btn btn-primary btn-user btn-block">
-                                            Login
-                                        </a>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+      <button type="submit">Login</button>
+    </form>
+  </div>
 
-            </div>
+  <script>
+    function togglePassword() {
+      const password = document.getElementById("password");
+      const icon = document.querySelector(".toggle-password i");
+      if (password.type === "password") {
+        password.type = "text";
+        icon.classList.remove("fa-eye");
+        icon.classList.add("fa-eye-slash");
+      } else {
+        password.type = "password";
+        icon.classList.remove("fa-eye-slash");
+        icon.classList.add("fa-eye");
+      }
+    }
 
-    </div>
+    const loginForm = document.getElementById("loginForm");
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
+    const emailError = document.getElementById("emailError");
+    const passwordError = document.getElementById("passwordError");
 
-    <!-- Bootstrap core JavaScript-->
-    <script src="{{ asset('assets/dist/vendor/jquery/jquery.min.js') }}"></script>
-    <script src="{{ asset('assets/dist/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+    loginForm.addEventListener("submit", function (e) {
+      // Optional client-side validation
+      emailError.textContent = "";
+      passwordError.textContent = "";
 
-    <!-- Core plugin JavaScript-->
-    <script src="{{ asset('assets/dist/vendor/jquery-easing/jquery.easing.min.js') }}"></script>
+      let valid = true;
 
-    <!-- Custom scripts for all pages-->
-    <script src="{{ asset('assets/dist/js/sb-admin-2.min.js') }}"></script>
+      if (emailInput.value.trim() === "") {
+        emailError.textContent = "email is required.";
+        valid = false;
+      }
 
+      if (passwordInput.value.trim() === "") {
+        passwordError.textContent = "Password is required.";
+        valid = false;
+      }
+
+      if (!valid) {
+        e.preventDefault
+      }
+    });
+  </script>
 
 </body>
-
 </html>

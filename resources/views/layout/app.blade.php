@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cabinet Managment System</title>
+  <title>ProCabT</title>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
   <link rel="stylesheet" href="{{ asset('assets/dist/css/app.css') }}">
@@ -22,7 +22,7 @@
 <div class="page-wrapper">
   <!-- Page Header -->
     <header class="page-header">
-        <h1 class="page-title">Dashboard</h1>
+        <h1 class="page-title">ProCabT</h1>
             <div class="dropdown" style="position: relative;">
                 <a href="#" class="nav-link" id="profileDropdown" onclick="toggleDropdown(event)">
                 <div class="avatar">
@@ -38,7 +38,7 @@
                     <span>Profile</span>
                 </a>
                 <div class="dropdown-divider"></div>
-                <a class="dropdown-item text-danger" href="#">
+                <a class="dropdown-item text-danger" href="{{ route('logout') }}">
                     <i class="fas fa-sign-out-alt"></i>
                     <span>Logout</span>
                 </a>
@@ -48,10 +48,27 @@
 
   <!-- Page Body -->
   
-  <div class="container-fluid mt-3">
-    @yield('content')
+  <div class="container-fluid">
+    <div class="page-body">
+      @if (session('success'))
+          <div class="alert alert-success alert-dismissible fade show m-3" role="alert">
+              {{ session('success') }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+      @endif
+
+      @if (session('error'))
+          <div class="alert alert-danger alert-dismissible fade show m-3" role="alert">
+              {{ session('error') }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+      @endif
+      @yield('content')
+    </div>
   </div>
 </div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
 <script>
   // Toggle sidebar on mobile

@@ -3,127 +3,176 @@
 namespace App\Http\Controllers;
 
 use App\Models\Cabinet;
-use App\Models\CabinetTransaction;
+use App\Models\RefType;
+use App\Models\RefLocation;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class CabinetController extends Controller
 {
-    /**
-     * Display a listing of the cabinets
-     */
-    public function index()
+   public function checkin(Request $request)
     {
-        $cabinets = Cabinet::all();
-        return view('cabinets.index', compact('cabinets'));
-    }
-
-    /**
-     * Show cabinet details
-     */
-    public function show(Cabinet $cabinet)
-    {
-        $transactions = $cabinet->transactions()->latest()->take(10)->get();
-        return view('cabinets.show', compact('cabinet', 'transactions'));
-    }
-
-    /**
-     * Check in an item to a cabinet
-     */
-    public function checkIn(Request $request)
-    {
-        $validated = $request->validate([
-            'barcode' => 'required|string',
-            'cabinet_number' => 'required|integer|min:1|max:30',
-            'notes' => 'nullable|string'
+        $request->validate([
+            'barcode' => 'required',
+            'ref_type_id' => 'required|exists:ref_types,id',
+            'ref_location_id' => 'required|exists:ref_locations,id',
         ]);
 
-        $cabinet = Cabinet::where('cabinet_number', $validated['cabinet_number'])->first();
-        
+        $cabinet = Cabinet::where('ref_type_id', $request->ref_type_id)
+            ->where('ref_location_id', $request->ref_location_id)
+            ->where('is_occupied', false)
+            ->first();
+
         if (!$cabinet) {
-            return redirect()->back()->with('error', 'Cabinet not found.');
-        }
-        
-        if ($cabinet->status === 'occupied') {
-            return redirect()->back()->with('error', 'Cabinet is already occupied.');
+            return back()->with('error', 'No available cabinet found.');
         }
 
-        // Update cabinet status
         $cabinet->update([
-            'status' => 'occupied',
-            'barcode' => $validated['barcode']
+            'is_occupied' => true,
+            'barcode' => $request->barcode,
         ]);
-        
-        // Create transaction record
-        CabinetTransaction::create([
+
+        Transaction::create([
             'cabinet_id' => $cabinet->id,
-            'user_id' => Auth::id(),
-            'barcode' => $validated['barcode'],
-            'action' => 'check_in',
-            'notes' => $validated['notes'] ?? null
+            'user_id' => Auth::user()->id,
+            'barcode' => $request->barcode,
+            'action' => 'check-in',
         ]);
-        
-        return redirect()->route('cabinets.index')->with('success', 'Item successfully checked into cabinet.');
+
+        return back()->with('success', 'Check-in successful.');
     }
 
-    /**
-     * Check out an item from a cabinet
-     */
-    public function checkOut(Request $request)
+    public function checkinOne(Request $request, Cabinet $cabinet)
     {
-        $validated = $request->validate([
-            'barcode' => 'required|string',
-            'notes' => 'nullable|string'
+        $request->validate([
+            'barcode' => 'required|string|max:255',
         ]);
 
-        $cabinet = Cabinet::where('barcode', $validated['barcode'])->where('status', 'occupied')->first();
-        
+        // Example logic: update cabinet with barcode and mark as occupied
+        if ($cabinet->is_occupied) {
+            return back()->with('error', 'Cabinet not found or already checked out.');
+        }
+
+        $cabinet->barcode = $request->input('barcode');
+        $cabinet->is_occupied = 1;  // mark as occupied
+        $cabinet->save();
+
+        Transaction::create([
+            'cabinet_id' => $cabinet->id,
+            'user_id' => Auth::user()->id,
+            'barcode' => $request->barcode,
+            'action' => 'check-out',
+        ]);
+
+        return redirect()->route('cabinet.index')->with('success', 'Check-in successful.');
+    }
+
+    public function checkout(Request $request)
+    {
+        $request->validate([
+            'barcode' => 'required',
+        ]);
+
+        $cabinet = Cabinet::where('barcode', $request->barcode)
+            ->where('is_occupied', true)
+            ->first();
+
         if (!$cabinet) {
-            return redirect()->back()->with('error', 'No occupied cabinet found with this barcode.');
+            return back()->with('error', 'Cabinet not found or already checked out.');
         }
-        
-        // Create transaction record
-        CabinetTransaction::create([
-            'cabinet_id' => $cabinet->id,
-            'user_id' => Auth::id(),
-            'barcode' => $validated['barcode'],
-            'action' => 'check_out',
-            'notes' => $validated['notes'] ?? null
-        ]);
-        
-        // Update cabinet status
+
         $cabinet->update([
-            'status' => 'available',
-            'barcode' => null
+            'is_occupied' => false,
+            'barcode' => null,
         ]);
-        
-        return redirect()->route('cabinets.index')->with('success', 'Item successfully checked out from cabinet.');
+
+        Transaction::create([
+            'cabinet_id' => $cabinet->id,
+            'user_id' => Auth::user()->id,
+            'barcode' => $request->barcode,
+            'action' => 'check-out',
+        ]);
+
+        return back()->with('success', 'Check-out successful for '. $request->barcode . ' at ' . $cabinet->cabinet_no . ' cabinet.');
     }
 
-    /**
-     * Display check-in form
-     */
-    public function showCheckInForm()
+    public function checkoutOne($cabinet)
     {
-        $availableCabinets = Cabinet::available()->get();
-        return view('cabinets.check-in', compact('availableCabinets'));
+        $oneCabinet = Cabinet::where('id', $cabinet)
+            ->where('is_occupied', true)
+            ->first();
+
+        if (!$oneCabinet) {
+            return back()->with('error', 'Cabinet not found or already checked out.');
+        }
+
+        $barcode = $oneCabinet->barcode;
+
+        Transaction::create([
+            'cabinet_id' => $oneCabinet->id,
+            'user_id' => Auth::user()->id,
+            'barcode' => $barcode,
+            'action' => 'check-out',
+        ]);
+
+        $oneCabinet->update([
+            'is_occupied' => false,
+            'barcode' => null,
+        ]);
+
+        return back()->with('success', 'Check-out successful for '. $barcode . ' at ' . $oneCabinet->cabinet_no . ' cabinet.');
     }
 
-    /**
-     * Display check-out form
-     */
-    public function showCheckOutForm()
+
+    public function index(Request $request)
     {
-        $occupiedCabinets = Cabinet::occupied()->get();
-        return view('cabinets.check-out', compact('occupiedCabinets'));
+        $userId = Auth::user()->id;
+
+        // Cabinets occupied by this user with barcode not null
+        $userParcels = Cabinet::where('is_occupied', true)
+            ->whereNotNull('barcode')
+            ->get();
+
+        // All cabinets, paginated
+        $cabinets = Cabinet::paginate(30);
+
+        $refTypes = RefType::all();
+        $refLocations = RefLocation::all();
+
+        return view('cabinets.cabinetList', compact('userParcels', 'cabinets', 'refTypes', 'refLocations'));
     }
 
-    /**
-     * Show transaction history
-     */
-    public function transactions()
+    public function search(Request $request)
     {
-        $transactions = CabinetTransaction::with(['cabinet', 'user'])->latest()->paginate(20);
-        return view('cabinets.transactions', compact('transactions'));
+        $search = $request->input('search');
+        $type = $request->input('type');
+        $location = $request->input('location');
+
+        $cabinets = Cabinet::when($search, function ($query, $search) {
+                // Group the search terms with OR for cabinet_no or barcode
+                $query->where(function ($q) use ($search) {
+                    $q->where('cabinet_no', 'like', "%{$search}%")
+                    ->orWhere('barcode', 'like', "%{$search}%");
+                });
+            })
+            ->when($type, function ($query, $type) {
+                // Filter by type if selected
+                return $query->where('ref_type_id', $type);
+            })
+            ->when($location, function ($query, $location) {
+                // Filter by location if selected
+                return $query->where('ref_location_id', $location);
+            })
+            ->paginate(30);
+
+        if ($request->ajax()) {
+            $view = view('partials.cabinet_cards', compact('cabinets'))->render();
+            return response()->json(['html' => $view]);
+        }
+
+        return view('cabinets.cabinetList', compact('cabinets'));
     }
+
+
 }

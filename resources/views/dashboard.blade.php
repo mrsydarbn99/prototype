@@ -1,164 +1,295 @@
 @extends('layout.app')
-
 @section('content')
-    <div class="page-body">
-    <!-- Stats Row -->
-    <div class="row">
-      <div class="col">
-        <div class="card">
-          <div class="card-body">
-            <div class="stats-card">
-              <div class="stats-icon" style="background-color: rgba(74, 108, 247, 0.1); color: #4a6cf7;">
-                <i class="fas fa-users"></i>
-              </div>
-              <div class="stats-info">
-                <h3>2,451</h3>
-                <p>Total Users</p>
-              </div>
-            </div>
-          </div>
+<!-- Stats Row -->
+  <div class="logo">
+    <img src="{{ asset('assets/dist/img/ProCabT.png') }}" alt="" width="500">
+  </div>
+  <div class="input-group mt-4">
+    <input type="text" class="form-control" placeholder="SCAN PROBECARD BARCODE" id="barcodeOutside">
+    <button class="btn btn-light search-button" type="button" data-bs-toggle="modal" data-bs-target="#checkinModal">
+      <i class="fa-solid fa-magnifying-glass"></i>
+    </button>
+  </div>
+  <div class="d-flex justify-content-center mb-5">
+    <button class="btn btn-success action-btn" data-bs-toggle="modal" data-bs-target="#checkinModal">
+      CHECK-IN PARCEL
+    </button>
+    <button class="btn btn-danger action-btn" data-bs-toggle="modal" data-bs-target="#checkoutConfirmModal">
+      CHECK-OUT PARCEL
+    </button>
+  </div>
+  <div class="container nav-icons mt-5">
+    <div class="row justify-content-center">
+      <div class="col-4 col-md-2 text-center">
+        <div class="icon-btn">
+          <i class="fas fa-box"></i>
         </div>
+        <div class="label-text">Parcel</div>
       </div>
-      <div class="col">
-        <div class="card">
-          <div class="card-body">
-            <div class="stats-card">
-              <div class="stats-icon" style="background-color: rgba(16, 185, 129, 0.1); color: #10b981;">
-                <i class="fas fa-shopping-cart"></i>
-              </div>
-              <div class="stats-info">
-                <h3>$12,438</h3>
-                <p>Total Revenue</p>
-              </div>
-            </div>
-          </div>
+      <div class="col-4 col-md-2 text-center">
+        <div class="icon-btn">
+          <i class="fas fa-boxes-stacked"></i>
         </div>
+        <div class="label-text">Cabinet</div>
       </div>
-      <div class="col">
-        <div class="card">
-          <div class="card-body">
-            <div class="stats-card">
-              <div class="stats-icon" style="background-color: rgba(249, 115, 22, 0.1); color: #f97316;">
-                <i class="fas fa-file-alt"></i>
-              </div>
-              <div class="stats-info">
-                <h3>342</h3>
-                <p>New Orders</p>
-              </div>
-            </div>
-          </div>
+      <div class="col-4 col-md-2 text-center">
+        <div class="icon-btn">
+          <i class="fas fa-user"></i>
         </div>
-      </div>
-      <div class="col">
-        <div class="card">
-          <div class="card-body">
-            <div class="stats-card">
-              <div class="stats-icon" style="background-color: rgba(139, 92, 246, 0.1); color: #8b5cf6;">
-                <i class="fas fa-star"></i>
-              </div>
-              <div class="stats-info">
-                <h3>98.3%</h3>
-                <p>Satisfaction Rate</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Charts Row -->
-    <div class="row" style="margin-top: 1rem;">
-      <div class="col" style="flex: 2;">
-        <div class="card">
-          <div class="card-header">
-            <h2 class="card-title">Revenue Overview</h2>
-            <div>
-              <select style="border: 1px solid var(--border-color); padding: 0.35rem; border-radius: 0.375rem; font-size: 0.875rem;">
-                <option>Last 7 days</option>
-                <option>Last 30 days</option>
-                <option>Last 90 days</option>
-              </select>
-            </div>
-          </div>
-          <div class="card-body">
-            <div class="chart-container">
-              <!-- Chart placeholder -->
-              <div style="width: 100%; height: 100%; background: linear-gradient(to right, #f1f5f9 50%, #e2e8f0 50%); opacity: 0.3; border-radius: 0.5rem;"></div>
-              <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: #64748b;">
-                <i class="fas fa-chart-line" style="font-size: 2rem; margin-bottom: 1rem;"></i>
-                <p>Revenue Chart Visualization</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="col">
-        <div class="card">
-          <div class="card-header">
-            <h2 class="card-title">Top Products</h2>
-          </div>
-          <div class="card-body">
-            <div class="chart-container">
-              <!-- Chart placeholder -->
-              <div style="width: 100%; height: 100%; background: radial-gradient(circle, #f1f5f9 0%, #e2e8f0 100%); opacity: 0.3; border-radius: 50%;"></div>
-              <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: #64748b;">
-                <i class="fas fa-chart-pie" style="font-size: 2rem; margin-bottom: 1rem;"></i>
-                <p>Product Distribution</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Recent Activity -->
-    <div class="row" style="margin-top: 1rem;">
-      <div class="col">
-        <div class="card">
-          <div class="card-header">
-            <h2 class="card-title">Recent Activities</h2>
-            <a href="#" style="text-decoration: none; color: var(--primary-color); font-size: 0.875rem; font-weight: 500;">View All</a>
-          </div>
-          <div class="card-body" style="padding: 0;">
-            <div style="padding: 1rem; display: flex; align-items: center; border-bottom: 1px solid var(--border-color);">
-              <div style="background-color: rgba(74, 108, 247, 0.1); color: var(--primary-color); width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 1rem;">
-                <i class="fas fa-user-plus"></i>
-              </div>
-              <div style="flex: 1;">
-                <div style="display: flex; justify-content: space-between;">
-                  <p style="font-weight: 500; margin: 0;">New user registered</p>
-                  <span style="font-size: 0.75rem; color: var(--text-muted);">2 min ago</span>
-                </div>
-                <p style="margin: 0; font-size: 0.875rem; color: var(--text-muted);">Jane Cooper has registered</p>
-              </div>
-            </div>
-            <div style="padding: 1rem; display: flex; align-items: center; border-bottom: 1px solid var(--border-color);">
-              <div style="background-color: rgba(16, 185, 129, 0.1); color: #10b981; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 1rem;">
-                <i class="fas fa-shopping-bag"></i>
-              </div>
-              <div style="flex: 1;">
-                <div style="display: flex; justify-content: space-between;">
-                  <p style="font-weight: 500; margin: 0;">New order placed</p>
-                  <span style="font-size: 0.75rem; color: var(--text-muted);">1 hour ago</span>
-                </div>
-                <p style="margin: 0; font-size: 0.875rem; color: var(--text-muted);">Order #34522 has been placed</p>
-              </div>
-            </div>
-            <div style="padding: 1rem; display: flex; align-items: center;">
-              <div style="background-color: rgba(249, 115, 22, 0.1); color: #f97316; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 1rem;">
-                <i class="fas fa-comment"></i>
-              </div>
-              <div style="flex: 1;">
-                <div style="display: flex; justify-content: space-between;">
-                  <p style="font-weight: 500; margin: 0;">New comment</p>
-                  <span style="font-size: 0.75rem; color: var(--text-muted);">3 hours ago</span>
-                </div>
-                <p style="margin: 0; font-size: 0.875rem; color: var(--text-muted);">Robert Fox commented on report</p>
-              </div>
-            </div>
-          </div>
-        </div>
+        <div class="label-text">Admin</div>
       </div>
     </div>
   </div>
+
+  <!-- Check-in Modal -->
+    <div class="modal fade" id="checkinModal" tabindex="-1" aria-labelledby="checkinModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" style="max-width: 30%;">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modalTitle">Select Type</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+
+          <div class="modal-body text-center">
+            <form id="checkinForm" action="{{ route('cabinet.checkin') }}" method="POST">
+              @csrf
+              <input type="hidden" name="ref_type_id" id="ref_type_id" value="">
+              <input type="hidden" name="ref_location_id" id="ref_location_id" value="">
+              <input type="hidden" name="barcode" id="modal_barcode" value="">
+
+              <!-- Step 1: Select Type -->
+              <div id="step1">
+                <p>Please select the parcel type:</p>
+                <div class="d-flex flex-wrap justify-content-center gap-2">
+                  @foreach ($types as $type)
+                    <button type="button" class="btn btn-outline-primary type-btn" data-id="{{ $type->id }}">{{ $type->name }}</button>
+                  @endforeach
+                </div>
+              </div>
+
+              <!-- Step 2: Select Location -->
+              <div id="step2" style="display: none;">
+                <p>Please select the location:</p>
+                <div class="d-flex flex-wrap justify-content-center gap-2">
+                  @foreach ($locations as $location)
+                    <button type="button" class="btn btn-outline-secondary location-btn" data-id="{{ $location->id }}">{{ $location->name }}</button>
+                  @endforeach
+                </div>
+              </div>
+
+              <div class="mt-3">
+                <button type="button" class="btn btn-secondary" id="backBtn" style="display: none;">Back</button>
+                <button type="submit" class="btn btn-success" id="submitBtn" disabled>Confirm Check-In</button>
+              </div>
+
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Check-Out Confirmation Modal -->
+    <div class="modal fade" id="checkoutConfirmModal" tabindex="-1" aria-labelledby="checkoutConfirmModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
+        <div class="modal-content">
+          <form id="checkoutForm" action="{{ route('cabinet.checkout') }}" method="POST">
+            @csrf
+            <div class="modal-header">
+              <h5 class="modal-title">Confirm Check-Out</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center">
+              <p>Are you sure you want to check out this parcel?</p>
+              <input type="hidden" name="barcode" id="checkout_barcode" value="">
+            </div>
+            <div class="modal-footer d-flex justify-content-between">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+              <button type="submit" class="btn btn-danger">Yes, Check-Out</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
 @endsection
+
+@push('css')
+  <style>
+    .input-group {
+      max-width: 600px;
+      margin: 20px auto;
+    }
+    .search-button {
+      border: 1px solid #ced4da;
+      border-left: 0;
+      background-color: white;
+      color: #6c757d;
+    }
+    .action-btn {
+      margin: 10px;
+      width: 180px;
+      height: 50px;
+      font-weight: bold;
+      font-size: 1rem;
+    }
+    .nav-icons .col {
+      margin-top: 40px;
+    }
+    .icon-btn {
+      background-color: #ffe066;
+      border-radius: 20px;
+      padding: 20px;
+    }
+    .icon-btn img {
+      width: 50px;
+      height: 50px;
+    }
+    .icon-btn i {
+      font-size: 2.5rem; /* Adjust size as needed */
+    }
+    .label-text {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    .logo {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 1rem 0;
+        text-align: center;
+    }
+    .type-btn.active,
+    .location-btn.active {
+      background-color: #0d6efd;
+      color: white;
+      border-color: #0d6efd;
+    }
+  </style>
+@endpush
+
+@push('js')
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const step1 = document.getElementById('step1');
+    const step2 = document.getElementById('step2');
+    const backBtn = document.getElementById('backBtn');
+    const submitBtn = document.getElementById('submitBtn');
+    const refTypeInput = document.getElementById('ref_type_id');
+    const refLocationInput = document.getElementById('ref_location_id');
+    const barcodeOutside = document.getElementById('barcodeOutside');
+    const modalBarcode = document.getElementById('modal_barcode');
+    const checkinForm = document.getElementById('checkinForm');
+
+    let selectedType = null;
+    let selectedLocation = null;
+
+    // Step 1: Type buttons
+    document.querySelectorAll('.type-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        // Mark active
+        document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        selectedType = btn.dataset.id;
+        refTypeInput.value = selectedType;
+
+        // Move to Step 2: Location select
+        step1.style.display = 'none';
+        step2.style.display = 'block';
+        backBtn.style.display = 'inline-block';
+        submitBtn.disabled = true; // wait for location selection
+        submitBtn.style.display = 'inline-block';
+      });
+    });
+
+    // Step 2: Location buttons
+    document.querySelectorAll('.location-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        // Mark active
+        document.querySelectorAll('.location-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        selectedLocation = btn.dataset.id;
+        refLocationInput.value = selectedLocation;
+
+        // Enable submit
+        submitBtn.disabled = false;
+      });
+    });
+
+    // Back button to go back to Step 1
+    backBtn.addEventListener('click', () => {
+      step2.style.display = 'none';
+      step1.style.display = 'block';
+      backBtn.style.display = 'none';
+      submitBtn.disabled = true;
+      submitBtn.style.display = 'none';
+
+      // Reset location selection
+      selectedLocation = null;
+      refLocationInput.value = '';
+      document.querySelectorAll('.location-btn').forEach(b => b.classList.remove('active'));
+    });
+
+    // When modal closes, reset all
+    const checkinModal = document.getElementById('checkinModal');
+    checkinModal.addEventListener('hidden.bs.modal', () => {
+      // Reset to step 1
+      step2.style.display = 'none';
+      step1.style.display = 'block';
+      backBtn.style.display = 'none';
+      submitBtn.disabled = true;
+      submitBtn.style.display = 'none';
+
+      // Reset selections
+      selectedType = null;
+      selectedLocation = null;
+      refTypeInput.value = '';
+      refLocationInput.value = '';
+      document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.location-btn').forEach(b => b.classList.remove('active'));
+    });
+
+    // On form submit, copy the outside barcode input value into hidden input
+    checkinForm.addEventListener('submit', (e) => {
+      const barcodeValue = barcodeOutside.value.trim();
+
+      if (!barcodeValue) {
+        e.preventDefault();
+        alert('Please enter the barcode before checking in.');
+        // Optionally, you could close the modal or focus input
+        barcodeOutside.focus();
+        return;
+      }
+
+      modalBarcode.value = barcodeValue;
+    });
+
+    const checkoutForm = document.getElementById('checkoutForm');
+    const checkoutModalBarcode = document.getElementById('checkout_barcode');
+
+    if (checkoutForm) {
+      checkoutForm.addEventListener('submit', (e) => {
+        const barcodeValue = barcodeOutside.value.trim();
+
+        if (!barcodeValue) {
+          e.preventDefault();
+          alert('Please enter the barcode before checking out.');
+          barcodeOutside.focus();
+          return;
+        }
+
+        checkoutModalBarcode.value = barcodeValue;
+      });
+    }
+
+    const checkoutModal = document.getElementById('checkoutModal');
+    if (checkoutModal) {
+      checkoutModal.addEventListener('hidden.bs.modal', () => {
+        checkoutBarcodeOutside.value = '';
+        barcodeOutside.value = '';
+      });
+    }
+
+  });
+</script>
+@endpush

@@ -2,32 +2,31 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Cabinet extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
-        'cabinet_number',
-        'status', // 'occupied' or 'available'
-        'barcode',
-        'description'
+        'ref_type_id',
+        'ref_location_id',
+        'ref_cabinet_id',
+        'cabinet_no',
+        'is_occupied',
+        'barcode'
     ];
 
-    public function transactions()
+    public function type()
     {
-        return $this->hasMany(CabinetTransaction::class);
+        return $this->belongsTo(RefType::class, 'ref_type_id');
     }
 
-    public function scopeAvailable($query)
+    public function location()
     {
-        return $query->where('status', 'available');
+        return $this->belongsTo(RefLocation::class, 'ref_location_id');
     }
 
-    public function scopeOccupied($query)
+    public function cabinetRef()
     {
-        return $query->where('status', 'occupied');
+        return $this->belongsTo(RefCabinet::class, 'ref_cabinet_id');
     }
 }

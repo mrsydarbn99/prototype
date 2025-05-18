@@ -40,7 +40,7 @@ class CabinetController extends Controller
             'action' => 'check-in',
         ]);
 
-        return back()->with('success', 'Check-in successful.');
+        return back()->with('success', 'Check-in successful for '. $cabinet->barcode . ' at ' . $cabinet->cabinet_no . ' cabinet.');
     }
 
     public function checkinOne(Request $request, Cabinet $cabinet)
@@ -49,13 +49,12 @@ class CabinetController extends Controller
             'barcode' => 'required|string|max:255',
         ]);
 
-        // Example logic: update cabinet with barcode and mark as occupied
         if ($cabinet->is_occupied) {
             return back()->with('error', 'Cabinet not found or already checked out.');
         }
 
         $cabinet->barcode = $request->input('barcode');
-        $cabinet->is_occupied = 1;  // mark as occupied
+        $cabinet->is_occupied = 1;
         $cabinet->save();
 
         Transaction::create([
@@ -65,7 +64,7 @@ class CabinetController extends Controller
             'action' => 'check-out',
         ]);
 
-        return redirect()->route('cabinet.index')->with('success', 'Check-in successful.');
+         return redirect()->back()->with('success', 'Check-in successful for '. $cabinet->barcode . ' at ' . $cabinet->cabinet_no . ' cabinet.');
     }
 
     public function checkout(Request $request)
@@ -129,12 +128,10 @@ class CabinetController extends Controller
     {
         $userId = Auth::user()->id;
 
-        // Cabinets occupied by this user with barcode not null
         $userParcels = Cabinet::where('is_occupied', true)
             ->whereNotNull('barcode')
             ->get();
 
-        // All cabinets, paginated
         $cabinets = Cabinet::paginate(30);
 
         $refTypes = RefType::all();
@@ -150,18 +147,15 @@ class CabinetController extends Controller
         $location = $request->input('location');
 
         $cabinets = Cabinet::when($search, function ($query, $search) {
-                // Group the search terms with OR for cabinet_no or barcode
                 $query->where(function ($q) use ($search) {
                     $q->where('cabinet_no', 'like', "%{$search}%")
                     ->orWhere('barcode', 'like', "%{$search}%");
                 });
             })
             ->when($type, function ($query, $type) {
-                // Filter by type if selected
                 return $query->where('ref_type_id', $type);
             })
             ->when($location, function ($query, $location) {
-                // Filter by location if selected
                 return $query->where('ref_location_id', $location);
             })
             ->paginate(30);
@@ -174,5 +168,13 @@ class CabinetController extends Controller
         return view('cabinets.cabinetList', compact('cabinets'));
     }
 
+    public function userParcels()
+    {
+        $userId = Auth::id();
+        $userParcels = Cabinet::where('is_occupied', true)
+            ->where('user_id', $userId)
+            ->get();
 
+        return view('partials.cabinet_user_parcel', compact('userParcels'));
+    }
 }

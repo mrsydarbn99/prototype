@@ -1,6 +1,7 @@
 @extends('layout.app')
 @section('content')
 <!-- Stats Row -->
+<div class="container my-5">
   <div class="logo">
     <img src="{{ asset('assets/dist/img/ProCabT.png') }}" alt="" width="500">
   </div>
@@ -21,25 +22,28 @@
   <div class="container nav-icons mt-5">
     <div class="row justify-content-center">
       <div class="col-4 col-md-2 text-center">
-        <div class="icon-btn">
-          <i class="fas fa-box"></i>
-        </div>
-        <div class="label-text">Parcel</div>
+        <a href="{{ route('parcels.index') }}" class="icon-btn w-100 btn btn-outline-primary">
+          <i class="fas fa-box fa-2x d-block"></i>
+          <span class="label-text">Parcels</span>
+        </a>
       </div>
       <div class="col-4 col-md-2 text-center">
-        <div class="icon-btn">
-          <i class="fas fa-boxes-stacked"></i>
-        </div>
-        <div class="label-text">Cabinet</div>
+        <a href="{{ route('cabinet.index') }}" class="icon-btn w-100 btn btn-outline-success">
+          <i class="fas fa-boxes-stacked fa-2x d-block"></i>
+          <span class="label-text">Cabinets</span>
+        </a>
       </div>
+      @hasrole('admin')
       <div class="col-4 col-md-2 text-center">
-        <div class="icon-btn">
-          <i class="fas fa-user"></i>
-        </div>
-        <div class="label-text">Admin</div>
+        <a href="{{ route('userlist') }}" class="icon-btn w-100 btn btn-outline-dark">
+          <i class="fas fa-users fa-2x d-block"></i>
+          <span class="label-text">Users</span>
+        </a>
       </div>
+      @endhasrole
     </div>
   </div>
+</div>
 
   <!-- Check-in Modal -->
     <div class="modal fade" id="checkinModal" tabindex="-1" aria-labelledby="checkinModalLabel" aria-hidden="true">
@@ -144,7 +148,7 @@
       height: 50px;
     }
     .icon-btn i {
-      font-size: 2.5rem; /* Adjust size as needed */
+      font-size: 2.5rem;
     }
     .label-text {
       margin-top: 10px;
@@ -185,38 +189,45 @@
     // Step 1: Type buttons
     document.querySelectorAll('.type-btn').forEach(btn => {
       btn.addEventListener('click', () => {
-        // Mark active
         document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
 
         selectedType = btn.dataset.id;
         refTypeInput.value = selectedType;
 
-        // Move to Step 2: Location select
+        // Show Step 2
         step1.style.display = 'none';
         step2.style.display = 'block';
         backBtn.style.display = 'inline-block';
-        submitBtn.disabled = true; // wait for location selection
+        submitBtn.disabled = true;
         submitBtn.style.display = 'inline-block';
+
+        // Conditional logic: if type_id is 3 or 5, show only location_id 2
+        document.querySelectorAll('.location-btn').forEach(b => {
+          const locationId = b.dataset.id;
+          if (selectedType === '3' || selectedType === '5') {
+            b.style.display = (locationId === '2') ? 'inline-block' : 'none';
+          } else {
+            b.style.display = 'inline-block'; // show all
+          }
+        });
       });
     });
 
     // Step 2: Location buttons
     document.querySelectorAll('.location-btn').forEach(btn => {
       btn.addEventListener('click', () => {
-        // Mark active
         document.querySelectorAll('.location-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
 
         selectedLocation = btn.dataset.id;
         refLocationInput.value = selectedLocation;
 
-        // Enable submit
         submitBtn.disabled = false;
       });
     });
 
-    // Back button to go back to Step 1
+    // Back button
     backBtn.addEventListener('click', () => {
       step2.style.display = 'none';
       step1.style.display = 'block';
@@ -224,60 +235,58 @@
       submitBtn.disabled = true;
       submitBtn.style.display = 'none';
 
-      // Reset location selection
       selectedLocation = null;
       refLocationInput.value = '';
-      document.querySelectorAll('.location-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.location-btn').forEach(b => {
+        b.classList.remove('active');
+        b.style.display = 'inline-block'; // reset visibility
+      });
     });
 
-    // When modal closes, reset all
+    // Reset modal on close
     const checkinModal = document.getElementById('checkinModal');
     checkinModal.addEventListener('hidden.bs.modal', () => {
-      // Reset to step 1
       step2.style.display = 'none';
       step1.style.display = 'block';
       backBtn.style.display = 'none';
       submitBtn.disabled = true;
       submitBtn.style.display = 'none';
 
-      // Reset selections
       selectedType = null;
       selectedLocation = null;
       refTypeInput.value = '';
       refLocationInput.value = '';
       document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
-      document.querySelectorAll('.location-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.location-btn').forEach(b => {
+        b.classList.remove('active');
+        b.style.display = 'inline-block'; // reset visibility
+      });
     });
 
-    // On form submit, copy the outside barcode input value into hidden input
+    // On check-in submit
     checkinForm.addEventListener('submit', (e) => {
       const barcodeValue = barcodeOutside.value.trim();
-
       if (!barcodeValue) {
         e.preventDefault();
         alert('Please enter the barcode before checking in.');
-        // Optionally, you could close the modal or focus input
         barcodeOutside.focus();
         return;
       }
-
       modalBarcode.value = barcodeValue;
     });
 
+    // Checkout logic
     const checkoutForm = document.getElementById('checkoutForm');
     const checkoutModalBarcode = document.getElementById('checkout_barcode');
-
     if (checkoutForm) {
       checkoutForm.addEventListener('submit', (e) => {
         const barcodeValue = barcodeOutside.value.trim();
-
         if (!barcodeValue) {
           e.preventDefault();
           alert('Please enter the barcode before checking out.');
           barcodeOutside.focus();
           return;
         }
-
         checkoutModalBarcode.value = barcodeValue;
       });
     }
@@ -289,7 +298,6 @@
         barcodeOutside.value = '';
       });
     }
-
   });
 </script>
 @endpush

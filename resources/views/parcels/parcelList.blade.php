@@ -10,6 +10,7 @@
                 <th>ID</th>
                 <th>User</th>
                 <th>Cabinet No</th>
+                <th>Location</th>
                 <th>Barcode</th>
                 <th>Action</th>
                 <th>Date & Time</th>
@@ -49,8 +50,19 @@ $(document).ready(function() {
             },
             { data: 'user_name' },
             { data: 'cabinet_no' },
+            { data: 'location' },
             { data: 'barcode' },
-            { data: 'action' },
+            { 
+                data: 'action',
+                render: function (data, type, row) {
+                    let badge = data == 'check-in' ? 'success' : 'danger';
+                    let label = data == 'check-in' ? 'Check In' : 'Check Out';
+                    return `<div style="text-align: center;">
+                                <span class="badge bg-${badge}">${label}</span>
+                            </div>`;
+                }
+
+            },
             { data: 'created_at' }
         ],
     });

@@ -28,13 +28,18 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/cabinet/checkout', [CabinetController::class, 'checkout'])->name('cabinet.checkout');
     Route::post('/cabinet/checkout/{cabinet}', [CabinetController::class, 'checkoutOne'])->name('cabinet.checkoutOne');
     Route::get('/cabinet/search', [CabinetController::class, 'search'])->name('cabinet.search');
+    Route::get('/cabinet/userParcels', [CabinetController::class, 'userParcels'])->name('cabinet.userParcels');
 
     // Parcel routes
     Route::get('/parcels', [ParcelController::class, 'index'])->name('parcels.index');
     Route::get('/parcels/data', [ParcelController::class, 'getData'])->name('parcels.data');
 
-
     // User routes
+    Route::get('/profile/edit', [UserController::class, 'editOwn'])->name('profile.edit');
+    Route::put('/profile', [UserController::class, 'updateOwn'])->name('profile.update');
+});
+
+Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/user', [UserController::class, 'index'])->name('userlist');
     Route::get('/user/create', [UserController::class, 'create'])->name('user.create');
     Route::post('/user', [UserController::class, 'store'])->name('user.store');

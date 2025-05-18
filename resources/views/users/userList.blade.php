@@ -12,8 +12,9 @@
         <thead>
             <tr>
                 <th style="width: 3%;">#</th>
-                <th style="width: 40%;">Name</th>
-                <th style="width: 40%;">Email</th>
+                <th style="width: 35%;">Name</th>
+                <th style="width: 35%;">Username</th>
+                <th style="width: 10%;">Role</th>
                 <th>Status</th>
                 <th>Action</th>
             </tr>
@@ -50,7 +51,8 @@
                     title: '#'
                 },
                 { data: 'name' },
-                { data: 'email' },
+                { data: 'username' },
+                { data: 'roles' },
                 {
                     data: 'status',
                     render: function (data, type, row) {

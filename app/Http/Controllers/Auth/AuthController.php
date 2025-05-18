@@ -17,18 +17,25 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        $request->validate([
-            'email' => 'required|email|string',
-            'password' => 'required|string',
-        ]);
+        $credentials = $request->only('username', 'password');
 
-        if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
+        if (Auth::attempt($credentials)) {
+            $user = Auth::user();
+
+            if ($user->status == 2) {
+                Auth::logout();
+                return redirect()->route('login')->withErrors([
+                    'status' => 'Your account is inactive. Please contact admin.'
+                ])->withInput();
+            }
+
             return redirect()->intended('dashboard');
         }
 
-        return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
-        ])->onlyInput('email');
+        // Authentication failed
+        return redirect()->route('login')->withErrors([
+            'status' => 'Your username or password is incorrect.'
+        ])->withInput();
     }
 
     public function showRegister()
@@ -43,7 +50,7 @@ class AuthController extends Controller
             'name' => 'required',
             'password' => 'required|confirmed|min:6',
         ]);
-        // dd('here');
+        
         User::create([
             'email' => $request->email,
             'name' => $request->name,

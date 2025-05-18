@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="{{ asset('assets/dist/img/logo.png') }}">
   <title>ProCabT</title>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
@@ -26,16 +27,16 @@
             <div class="dropdown" style="position: relative;">
                 <a href="#" class="nav-link" id="profileDropdown" onclick="toggleDropdown(event)">
                 <div class="avatar">
+                  <img src="{{ asset('assets/dist/img/user.png') }}" width="34" height="34" alt="User Avatar">
                 </div>
                 <div class="d-xl-block">
-                    <div style="font-weight: 500;">John Doe</div>
-                    <div style="font-size: 0.75rem; color: var(--text-muted);">Administrator</div>
+                    <div class="text-dark" style="font-weight: 600;">{{ Auth::user()->name }}</div>
                 </div>
                 </a>
                 <div class="dropdown-menu" id="userDropdown" style="display: none; position: absolute; top: 100%; left: 0; min-width: 200px;">
-                <a class="dropdown-item" href="#">
+                <a class="dropdown-item" href="{{ route('profile.edit') }}">
                     <i class="fas fa-user"></i>
-                    <span>Profile</span>
+                    <span>Edit Profile</span>
                 </a>
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item text-danger" href="{{ route('logout') }}">

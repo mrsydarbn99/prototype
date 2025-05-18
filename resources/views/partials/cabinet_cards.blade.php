@@ -26,13 +26,12 @@
                 Check Out
             </button>
           @else
-            <button type="button"
-                    class="btn btn-sm btn-outline-success w-100"
-                    data-bs-toggle="modal"
-                    data-bs-target="#checkinModal"
-                    data-cabinet-id="{{ $cabinet->id }}"
+            <button class="btn btn-sm btn-outline-success w-100" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#confirmCheckinModal" 
+                    data-cabinet-id="{{ $cabinet->id }}" 
                     data-cabinet-no="{{ $cabinet->cabinet_no }}">
-                Check In
+              Check In
             </button>
           @endif
         </div>

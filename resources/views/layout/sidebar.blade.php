@@ -21,18 +21,14 @@
         <span>Cabinets</span>
       </a> 
     </li>
-    <li class="nav-item">
-      <a class="nav-link" href="#">
-        <i class="fas fa-user"></i>
-        <span>Admin</span>
-      </a>
-    </li>
+    @hasrole('admin')
     <li class="nav-item">
       <a class="nav-link {{ request()->routeIs('userlist') ? 'active' : '' }}" href="{{ route('userlist') }}">
         <i class="fas fa-users"></i>
         <span>Users</span>
       </a>
     </li>
+    @endhasrole
   </ul>
   
   <div class="navbar-footer">

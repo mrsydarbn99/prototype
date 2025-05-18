@@ -3,85 +3,12 @@
 @section('content')
 <div class="container my-4">
 
-  <!-- Your Parcel Section -->
-  @if(!$userParcels->isEmpty())
-    <h4>Your Parcel</h4>
-    <hr>
-    <div class="position-relative my-4">
-        <!-- Left Button (Outside Left) -->
-        <button class="carousel-control-prev position-absolute top-50 translate-middle-y bg-black text-white rounded-circle d-flex align-items-center justify-content-center"
-                type="button"
-                data-bs-target="#userParcelCarousel"
-                data-bs-slide="prev"
-                style="left: -60px; z-index: 10; width: 40px; height: 40px;">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Previous</span>
-        </button>
-
-        <!-- Carousel Wrapper -->
-        <div id="userParcelCarousel" class="carousel slide">
-            <div class="carousel-inner">
-            @foreach ($userParcels->chunk(6) as $chunkIndex => $chunk)
-                <div class="carousel-item {{ $chunkIndex === 0 ? 'active' : '' }}">
-                <div class="row justify-content-center">
-                    @foreach ($chunk as $cabinet)
-                    <div class="col-sm-6 col-md-4 col-lg-2 mb-3">
-                        <div class="card h-100 d-flex flex-column shadow-sm 
-                        {{ $cabinet->is_occupied === 1 ? 'bg-danger-subtle' : 'bg-success-subtle' }}">
-                        <div class="card-body flex-grow-1 p-2">
-                            <h4 class="text-center text-black bg-white p-1 rounded">{{ $cabinet->cabinet_no }}</h4>
-                            <p class="card-text mt-2 mb-1">
-                            <strong>Status:</strong>
-                            <span class="{{ $cabinet->is_occupied === 1 ? 'text-danger' : 'text-success' }}">
-                                {{ $cabinet->is_occupied === 1 ? 'Occupied' : 'Available' }}
-                            </span>
-                            </p>
-                            <p class="card-text mb-2">
-                            <strong>Barcode:</strong> {{ $cabinet->barcode ?? 'N/A' }}
-                            </p>
-                        </div>
-                        <div class="card-footer bg-transparent border-0 mt-auto">
-                            @if ($cabinet->is_occupied)
-                            <button type="button"
-                                    class="btn btn-sm btn-outline-danger w-100"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#confirmCheckoutModal"
-                                    data-cabinet-id="{{ $cabinet->id }}"
-                                    data-cabinet-no="{{ $cabinet->cabinet_no }}">
-                                Check Out
-                            </button>
-                            @else
-                            <button type="button"
-                                    class="btn btn-sm btn-outline-success w-100"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#checkinModal"
-                                    data-cabinet-id="{{ $cabinet->id }}"
-                                    data-cabinet-no="{{ $cabinet->cabinet_no }}">
-                                Check In
-                            </button>
-                            @endif
-                        </div>
-                        </div>
-                    </div>
-                    @endforeach
-                </div>
-                </div>
-            @endforeach
-            </div>
-        </div>
-
-        <!-- Right Button (Outside Right) -->
-        <button class="carousel-control-next position-absolute top-50 translate-middle-y bg-black text-white rounded-circle d-flex align-items-center justify-content-center"
-                type="button"
-                data-bs-target="#userParcelCarousel"
-                data-bs-slide="next"
-                style="right: -60px; z-index: 10; width: 40px; height: 40px;">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Next</span>
-        </button>
-    </div>
-
-  @endif
+  <!-- User Parcel Section -->
+  <div id="userParcelSection">
+    @if(!$userParcels->isEmpty())
+      @include('partials.cabinet_user_parcel', ['userParcels' => $userParcels])
+    @endif
+  </div>
 
   <!-- Cabinet List Section -->
   <h4>Cabinet List</h4>
@@ -141,31 +68,33 @@
   </div>
 </div>
 
-<!-- Check-In Modal -->
-<div class="modal fade" id="checkinModal" tabindex="-1" aria-labelledby="checkinModalLabel" aria-hidden="true">
+<!-- Check-In Confirmation Modal -->
+<div class="modal fade" id="confirmCheckinModal" tabindex="-1" aria-labelledby="confirmCheckinLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
-      <form method="POST" id="checkinForm">
+      <form method="POST" id="confirmCheckinForm">
         @csrf
         <div class="modal-header">
-          <h5 class="modal-title" id="checkinModalLabel">Check In Cabinet</h5>
+          <h5 class="modal-title" id="confirmCheckinLabel">Confirm Check In</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <input type="hidden" name="cabinet_id" id="checkinCabinetId" />
-          <div class="mb-3">
-            <label for="barcodeInput" class="form-label">Enter Barcode</label>
-            <input type="text" class="form-control" id="barcodeInput" name="barcode" required>
+          Are you sure you want to check in to <strong id="checkinCabinetLabel"></strong>?
+          <input type="hidden" name="cabinet_id" id="confirmCheckinCabinetId" />
+          <div class="mt-3">
+            <label for="confirmBarcodeInput" class="form-label">Enter Barcode</label>
+            <input type="text" class="form-control" id="confirmBarcodeInput" name="barcode" required>
           </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="submit" class="btn btn-success">Check In</button>
+          <button type="submit" class="btn btn-success">Yes, Check In</button>
         </div>
       </form>
     </div>
   </div>
 </div>
+
 
 @endsection
 
@@ -262,11 +191,22 @@ $('#checkinModal').on('show.bs.modal', function (event) {
   $('#barcodeInput').val('');
 });
 
-$('#checkinForm').submit(function(e) {
+$('#confirmCheckinModal').on('show.bs.modal', function (event) {
+  const button = $(event.relatedTarget);
+  const cabinetId = button.data('cabinet-id');
+  const cabinetNo = button.data('cabinet-no');
+
+  $('#confirmCheckinCabinetId').val(cabinetId);
+  $('#confirmBarcodeInput').val('');
+  $('#checkinCabinetLabel').text(`cabinet ${cabinetNo}`);
+});
+
+// Submit AJAX Check-In
+$('#confirmCheckinForm').submit(function(e) {
   e.preventDefault();
 
-  const cabinetId = $('#checkinCabinetId').val();
-  const barcode = $('#barcodeInput').val();
+  const cabinetId = $('#confirmCheckinCabinetId').val();
+  const barcode = $('#confirmBarcodeInput').val();
   const token = $('input[name="_token"]').val();
 
   $.ajax({
@@ -274,8 +214,23 @@ $('#checkinForm').submit(function(e) {
     type: 'POST',
     data: { barcode: barcode, _token: token },
     success: function(response) {
-      $('#checkinModal').modal('hide');
+      $('#confirmCheckinModal').modal('hide');
       window.location.reload();
+      // Refresh user parcel (carousel)
+      // $.ajax({
+      //   url: "{{ route('cabinet.userParcels') }}",
+      //   type: 'GET',
+      //   success: function(data) {
+      //     $('#userParcelSection').html(data);
+      //     $('#userParcelCarousel').carousel({
+      //       interval: false,
+      //       wrap: false
+      //     });
+      //   }
+      // });
+
+      // // Refresh cabinet list
+      // fetchCabinets(1, currentSearch, currentType, currentLocation);
     },
     error: function(xhr) {
       alert('Error during check-in. Please try again.');
@@ -283,5 +238,6 @@ $('#checkinForm').submit(function(e) {
     }
   });
 });
+
 </script>
 @endpush
